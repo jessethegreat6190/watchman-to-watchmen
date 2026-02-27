@@ -273,10 +273,6 @@ auth.onAuthStateChanged(user => {
   if (typeof checkForPendingApprovals === 'function') checkForPendingApprovals();
   
   // Specific page initializations that depend on auth state
-  if (window.location.pathname.endsWith('admin.html')) {
-    if (typeof handleAdminInit === 'function') handleAdminInit();
-  }
-  if (window.location.pathname.endsWith('upload.html')) {
-    if (typeof checkAccess === 'function') checkAccess();
-  }
+  if (typeof handleAdminInit === 'function') handleAdminInit();
+  if (typeof checkAccess === 'function') checkAccess();
 });

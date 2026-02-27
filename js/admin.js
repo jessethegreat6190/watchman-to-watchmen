@@ -3,30 +3,35 @@ let allUsers = [];
 
 // Handle Admin Initialization (called from auth.js when auth state changes)
 async function handleAdminInit() {
+  const restrictedEl = document.getElementById("admin-restricted");
+  const panelEl = document.getElementById("admin-panel-section");
+  
+  if (!restrictedEl || !panelEl) return;
+
   const user = auth.currentUser;
   
   if (!user) {
-    document.getElementById("admin-restricted").style.display = "block";
-    document.getElementById("admin-panel-section").style.display = "none";
+    restrictedEl.style.display = "block";
+    panelEl.style.display = "none";
     return;
   }
   
   await updateAdminStatus();
   
   if (window.isCurrentUserAdmin) {
-    document.getElementById("admin-restricted").style.display = "none";
-    document.getElementById("admin-panel-section").style.display = "block";
+    restrictedEl.style.display = "none";
+    panelEl.style.display = "block";
     loadAllUsers();
     loadStatistics();
   } else {
-    document.getElementById("admin-restricted").style.display = "block";
-    document.getElementById("admin-panel-section").style.display = "none";
+    restrictedEl.style.display = "block";
+    panelEl.style.display = "none";
   }
 }
 
 // Initial check on load
 document.addEventListener("DOMContentLoaded", () => {
-  handleAdminInit();
+  // handleAdminInit will be called by auth.onAuthStateChanged
 });
 
 // Load all users

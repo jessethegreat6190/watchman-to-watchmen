@@ -157,6 +157,109 @@ async function loadStatistics() {
   }
 }
 
+// Admin Quick Post (Upload)
+async function uploadImageAdmin() {
+  const user = auth.currentUser;
+  if (!user) {
+    showToast("Please login first", "warning");
+    return;
+  }
+  
+  const title = document.getElementById("admin-image-title").value.trim();
+  const description = document.getElementById("admin-image-description").value.trim();
+  const file = document.getElementById("admin-image-file").files[0];
+  
+  if (!title || !file) {
+    showToast("Title and image are required", "warning");
+    return;
+  }
+  
+  const uploadBtn = document.getElementById("admin-upload-btn");
+  const uploadProgress = document.getElementById("admin-upload-progress");
+  const progressBar = document.getElementById("admin-progress-bar");
+  const progressPercent = document.getElementById("admin-progress-percent");
+  
+  uploadBtn.disabled = true;
+  uploadBtn.innerText = "Processing...";
+  uploadProgress.style.display = "block";
+  
+  try {
+    const timestamp = Date.now();
+    const filename = `admin/${user.uid}/${timestamp}_${file.name}`;
+    const fileRef = storage.ref(filename);
+    const uploadTask = fileRef.put(file);
+    
+    uploadTask.on("state_changed",
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        const rounded = Math.round(progress);
+        if (progressPercent) progressPercent.innerText = `${rounded}%`;
+        if (progressBar) progressBar.style.width = rounded + "%";
+      },
+      (error) => {
+        console.error("Upload error:", error);
+        showToast("Upload failed: " + error.message, "error");
+        resetUploadFormAdmin();
+      },
+      async () => {
+        const downloadURL = await fileRef.getDownloadURL();
+        
+        const imageData = {
+          title,
+          description,
+          url: downloadURL,
+          uploadedBy: user.email,
+          uploadedByUid: user.uid,
+          isAdminUpload: true,
+          createdAt: new Date(),
+          fileSize: file.size,
+          fileName: file.name,
+          status: "approved",
+          verifiedByAdmin: true,
+          approvedBy: user.uid,
+          approvedAt: new Date()
+        };
+        
+        await db.collection("images").add(imageData);
+        
+        // Update user count for admin
+        const userRef = db.collection("users").doc(user.uid);
+        const userDoc = await userRef.get();
+        if (userDoc.exists) {
+          await userRef.update({
+            uploadCount: (userDoc.data().uploadCount || 0) + 1
+          });
+        }
+        
+        showToast("Successfully published to gallery!", "success");
+        resetUploadFormAdmin();
+        loadStatistics();
+      }
+    );
+  } catch (error) {
+    console.error("Error uploading image:", error);
+    showToast("Error during upload process", "error");
+    resetUploadFormAdmin();
+  }
+}
+
+function resetUploadFormAdmin() {
+  const uploadBtn = document.getElementById("admin-upload-btn");
+  const uploadProgress = document.getElementById("admin-upload-progress");
+  document.getElementById("admin-image-title").value = "";
+  document.getElementById("admin-image-description").value = "";
+  document.getElementById("admin-image-file").value = "";
+  if (uploadBtn) {
+    uploadBtn.disabled = false;
+    uploadBtn.innerText = "Post to Gallery";
+  }
+  if (uploadProgress) {
+    uploadProgress.style.display = "none";
+    document.getElementById("admin-progress-bar").style.width = "0%";
+    document.getElementById("admin-progress-percent").innerText = "0%";
+  }
+}
+
 // Show pending images for admin approval
 async function showPendingApprovalsAdmin() {
     window.handleApprove = async (imageId) => {

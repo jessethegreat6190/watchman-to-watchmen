@@ -38,49 +38,7 @@ async function loginUser(email, password) {
   }
 }
 // Google Sign In
-async function signInWithGoogle() {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  provider.setCustomParameters({ prompt: "select_account" });
-  try {
-    const result = await auth.signInWithPopup(provider);
-    const user = result.user;
-    
-    // Check if user exists in Firestore
-    const userRef = db.collection("users").doc(user.uid);
-    const doc = await userRef.get();
-    
-    if (!doc.exists) {
-      // Create profile for new Google users
-      const emailConsent = document.getElementById("email-consent") ? document.getElementById("email-consent").checked : false;
-      await userRef.set({
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        role: "viewer",
-        doorPass: false,
-        createdAt: new Date(),
-        uploadCount: 0,
-        provider: "google",
-        emailConsent: emailConsent
-      });
-      showToast("Welcome to Watchmen!", "success");
-    } else {
-      showToast("Welcome back!", "success");
-    }
-    
-    closeAuthModal();
-    updateNavigationUI();
-    
-    // Refresh page data
-    if (typeof loadGallery === 'function') loadGallery();
-    if (typeof checkAccess === 'function') checkAccess();
-    
-    return user;
-  } catch (error) {
-    console.error("Google Sign-In Error:", error.message);
-    showToast("Google Sign-In failed", "error");
-  }
-}
+
 
 // Logout user
 async function logoutUser() {
@@ -326,40 +284,58 @@ auth.onAuthStateChanged(user => {
 
 
 // GitHub Sign In
+
+
+
+// Unified Social Login Helper
+async function handleSocialLogin(result, providerName) {
+  const user = result.user;
+  const userRef = db.collection("users").doc(user.uid);
+  const doc = await userRef.get();
+  
+  if (!doc.exists) {
+    const emailConsent = document.getElementById("email-consent") ? document.getElementById("email-consent").checked : false;
+    await userRef.set({
+      email: user.email,
+      displayName: user.displayName || user.email.split('@')[0],
+      photoURL: user.photoURL || "",
+      role: "viewer",
+      doorPass: false,
+      createdAt: new Date(),
+      uploadCount: 0,
+      provider: providerName,
+      emailConsent: emailConsent
+    });
+    showToast(`Welcome to Watchmen!`, "success");
+  } else {
+    showToast("Welcome back!", "success");
+  }
+  
+  closeAuthModal();
+  updateNavigationUI();
+  if (typeof loadGallery === 'function') loadGallery();
+  if (typeof checkAccess === 'function') checkAccess();
+}
+
+async function signInWithGoogle() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
+  try {
+    const result = await auth.signInWithPopup(provider);
+    await handleSocialLogin(result, "google");
+  } catch (error) {
+    console.error("Google Error:", error);
+    showToast("Google Login Failed", "error");
+  }
+}
+
 async function signInWithGitHub() {
   const provider = new firebase.auth.GithubAuthProvider();
   try {
     const result = await auth.signInWithPopup(provider);
-    const user = result.user;
-    
-    const userRef = db.collection("users").doc(user.uid);
-    const doc = await userRef.get();
-    
-    if (!doc.exists) {
-      const emailConsent = document.getElementById("email-consent") ? document.getElementById("email-consent").checked : false;
-      await userRef.set({
-        email: user.email,
-        displayName: user.displayName,
-        photoURL: user.photoURL,
-        role: "viewer",
-        doorPass: false,
-        createdAt: new Date(),
-        uploadCount: 0,
-        provider: "github",
-        emailConsent: emailConsent
-      });
-      showToast("Welcome to Watchmen!", "success");
-    } else {
-      showToast("Welcome back!", "success");
-    }
-    
-    closeAuthModal();
-    updateNavigationUI();
-    if (typeof loadGallery === 'function') loadGallery();
-    if (typeof checkAccess === 'function') checkAccess();
-    return user;
+    await handleSocialLogin(result, "github");
   } catch (error) {
-    console.error("GitHub Sign-In Error:", error.message);
-    showToast("GitHub Sign-In failed", "error");
+    console.error("GitHub Error:", error);
+    showToast("GitHub Login Failed", "error");
   }
 }

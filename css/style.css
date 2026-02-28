@@ -525,3 +525,55 @@ nav.scrolled h1 img {
   transform: translate(-50%, -50%) scale(2);
   opacity: 0;
 }
+
+/* Refined Modal & Inputs */
+.auth-container {
+  max-width: 400px !important;
+  padding: 2rem !important;
+  border-radius: 20px !important;
+}
+
+.auth-container h2 {
+  font-size: 1.5rem !important;
+  margin-bottom: 0.25rem !important;
+}
+
+.auth-container p.subtitle {
+  margin-bottom: 1.5rem !important;
+  font-size: 0.875rem !important;
+}
+
+.form-group {
+  margin-bottom: 1rem !important;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"],
+textarea {
+  background: rgba(15, 23, 42, 0.6) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 1.1rem 1rem 0.6rem 1rem !important;
+  font-size: 0.95rem !important;
+}
+
+.form-group label {
+  top: 0.85rem !important;
+  font-size: 0.9rem !important;
+}
+
+.form-group input:focus ~ label,
+.form-group input:not(:placeholder-shown) ~ label {
+  top: 0.25rem !important;
+  font-size: 0.7rem !important;
+}
+
+.btn-google, .btn-github {
+  font-size: 0.9rem !important;
+  padding: 0.6rem !important;
+  border-radius: 10px !important;
+}
+
+#email-consent + label {
+  font-size: 0.75rem !important;
+}

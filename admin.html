@@ -37,18 +37,18 @@
         <p style="color: #94a3b8; margin-bottom: 2rem; font-size: 0.9375rem;">Upload directly to the gallery as an administrator</p>
         
         <div class="form-group">
-          <label for="admin-image-title">Inspiration Title *</label>
-          <input type="text" id="admin-image-title" placeholder="What's this about?">
+        <input type="text" id="admin-image-title" placeholder="What's this about?">
+        <label for="admin-image-title">Inspiration Title *</label>
         </div>
         
         <div class="form-group">
-          <label for="admin-image-description">Short Description</label>
-          <textarea id="admin-image-description" placeholder="Share the story behind this image..." style="background: #0f172a; border: 1px solid #334155; color: #fff; border-radius: 8px; padding: 0.75rem; width: 100%; min-height: 80px;"></textarea>
+        <textarea id="admin-image-description" placeholder="Share the story behind this image..." style="background: #0f172a; border: 1px solid #334155; color: #fff; border-radius: 8px; padding: 0.75rem; width: 100%; min-height: 80px;">
+        <label for="admin-image-description">Short Description</label></textarea>
         </div>
         
         <div class="form-group">
-          <label for="admin-image-file">Image File *</label>
-          <input type="file" id="admin-image-file" accept="image/*" style="padding: 0.6rem; background: #0f172a; border: 1px dashed #334155;">
+        <input type="file" id="admin-image-file" accept="image/*" style="padding: 0.6rem; background: #0f172a; border: 1px dashed #334155;" placeholder=" ">
+        <label for="admin-image-file">Image File *</label>
         </div>
         
         <button class="btn-primary" id="admin-upload-btn" onclick="uploadImageAdmin()" style="width: 100%; margin-top: 1rem;">Post to Gallery</button>
@@ -70,8 +70,8 @@
         <p style="color: #94a3b8; margin-bottom: 2rem; font-size: 0.9375rem;">Grant or revoke upload permissions for users</p>
         
         <div class="form-group">
-          <label for="user-email">Search User by Email</label>
-          <input type="text" id="user-email" placeholder="Enter user's email address" onkeyup="searchUsers()">
+        <input type="text" id="user-email" placeholder="Enter user's email address" onkeyup="searchUsers()">
+        <label for="user-email">Search User by Email</label>
         </div>
         
         <div id="user-list" class="user-list" style="margin-top: 1.5rem;"></div>
@@ -121,12 +121,12 @@
       <h2>Welcome back</h2>
       <p class="subtitle">Enter your details to manage the platform</p>
       <div class="form-group">
-        <label for="auth-email">Email Address</label>
         <input type="email" id="auth-email" placeholder="name@example.com">
+        <label for="auth-email">Email Address</label>
       </div>
       <div class="form-group">
-        <label for="auth-password">Password</label>
         <input type="password" id="auth-password" placeholder="********">
+        <label for="auth-password">Password</label>
       </div>
       
       <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin: 1.25rem 0; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 10px;">

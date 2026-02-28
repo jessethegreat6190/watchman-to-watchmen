@@ -8,12 +8,14 @@ async function signUpUser(email, password) {
     const result = await auth.createUserWithEmailAndPassword(email, password);
     const uid = result.user.uid;
     
+    const emailConsent = document.getElementById("email-consent") ? document.getElementById("email-consent").checked : false;
     await db.collection("users").doc(uid).set({
       email: email,
       role: "viewer",
       doorPass: false,
       createdAt: new Date(),
-      uploadCount: 0
+      uploadCount: 0,
+      emailConsent: emailConsent
     });
     
     showToast("Account created successfully!", "success");
@@ -38,6 +40,7 @@ async function loginUser(email, password) {
 // Google Sign In
 async function signInWithGoogle() {
   const provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
   try {
     const result = await auth.signInWithPopup(provider);
     const user = result.user;
@@ -48,6 +51,7 @@ async function signInWithGoogle() {
     
     if (!doc.exists) {
       // Create profile for new Google users
+      const emailConsent = document.getElementById("email-consent") ? document.getElementById("email-consent").checked : false;
       await userRef.set({
         email: user.email,
         displayName: user.displayName,
@@ -56,7 +60,8 @@ async function signInWithGoogle() {
         doorPass: false,
         createdAt: new Date(),
         uploadCount: 0,
-        provider: "google"
+        provider: "google",
+        emailConsent: emailConsent
       });
       showToast("Welcome to Watchmen!", "success");
     } else {
@@ -318,3 +323,43 @@ auth.onAuthStateChanged(user => {
   if (typeof checkAccess === 'function') checkAccess();
 });
 
+
+
+// GitHub Sign In
+async function signInWithGitHub() {
+  const provider = new firebase.auth.GithubAuthProvider();
+  try {
+    const result = await auth.signInWithPopup(provider);
+    const user = result.user;
+    
+    const userRef = db.collection("users").doc(user.uid);
+    const doc = await userRef.get();
+    
+    if (!doc.exists) {
+      const emailConsent = document.getElementById("email-consent") ? document.getElementById("email-consent").checked : false;
+      await userRef.set({
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        role: "viewer",
+        doorPass: false,
+        createdAt: new Date(),
+        uploadCount: 0,
+        provider: "github",
+        emailConsent: emailConsent
+      });
+      showToast("Welcome to Watchmen!", "success");
+    } else {
+      showToast("Welcome back!", "success");
+    }
+    
+    closeAuthModal();
+    updateNavigationUI();
+    if (typeof loadGallery === 'function') loadGallery();
+    if (typeof checkAccess === 'function') checkAccess();
+    return user;
+  } catch (error) {
+    console.error("GitHub Sign-In Error:", error.message);
+    showToast("GitHub Sign-In failed", "error");
+  }
+}

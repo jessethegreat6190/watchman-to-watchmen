@@ -89,6 +89,13 @@
         <label for="auth-password">Password</label>
         <input type="password" id="auth-password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢">
       </div>
+      
+      <div style="display: flex; align-items: flex-start; gap: 0.75rem; margin: 1.25rem 0; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 10px;">
+        <input type="checkbox" id="email-consent" style="margin-top: 0.25rem; width: 1.1rem; height: 1.1rem; cursor: pointer; border-radius: 4px; accent-color: #6366f1;">
+        <label for="email-consent" style="font-size: 0.8125rem; color: #94a3b8; cursor: pointer; line-height: 1.4;">
+          Receive email notifications when new inspiration is uploaded to the gallery.
+        </label>
+      </div>
       <button id="auth-submit-btn" class="btn-primary" style="width: 100%; margin-top: 1rem;" onclick="submitAuth()">Login</button>
       
       <div style="display: flex; align-items: center; margin: 1.5rem 0; color: #64748b;">
@@ -97,10 +104,16 @@
         <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
       </div>
       
-      <button onclick="signInWithGoogle()" class="btn-google" style="width: 100%; background: #fff; color: #1e293b; border: none; padding: 0.75rem; border-radius: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.75rem; cursor: pointer; transition: all 0.2s;">
-        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20" alt="Google">
-        Continue with Google
-      </button>
+      <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem;">
+        <button onclick="signInWithGoogle()" class="btn-google" style="width: 100%; background: #fff; color: #1e293b; border: none; padding: 0.75rem; border-radius: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.75rem; cursor: pointer; transition: all 0.2s;">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20" alt="Google">
+          Continue with Google
+        </button>
+        <button onclick="signInWithGitHub()" class="btn-github" style="width: 100%; background: #24292e; color: #fff; border: none; padding: 0.75rem; border-radius: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.75rem; cursor: pointer; transition: all 0.2s;">
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/github.svg" width="20" height="20" alt="GitHub">
+          Continue with GitHub
+        </button>
+      </div>
       <div class="auth-links">
         <a href="#" onclick="toggleLoginSignup(event)" style="color: #6366f1; text-decoration: none; font-weight: 600;">Need an account? Sign up</a>
       </div>
@@ -119,4 +132,5 @@
   <script src="js/upload.js"></script>
 </body>
 </html>
+
 

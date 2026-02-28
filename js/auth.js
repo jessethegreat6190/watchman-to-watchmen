@@ -1,4 +1,4 @@
-// Authentication and User Management
+﻿// Authentication and User Management
 
 let isLoginMode = true;
 
@@ -33,6 +33,47 @@ async function loginUser(email, password) {
   } catch (error) {
     console.error("Login error:", error.message);
     showToast("Login failed: " + error.message, "error");
+  }
+}
+// Google Sign In
+async function signInWithGoogle() {
+  const provider = new firebase.auth.GoogleAuthProvider();
+  try {
+    const result = await auth.signInWithPopup(provider);
+    const user = result.user;
+    
+    // Check if user exists in Firestore
+    const userRef = db.collection("users").doc(user.uid);
+    const doc = await userRef.get();
+    
+    if (!doc.exists) {
+      // Create profile for new Google users
+      await userRef.set({
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
+        role: "viewer",
+        doorPass: false,
+        createdAt: new Date(),
+        uploadCount: 0,
+        provider: "google"
+      });
+      showToast("Welcome to Watchmen!", "success");
+    } else {
+      showToast("Welcome back!", "success");
+    }
+    
+    closeAuthModal();
+    updateNavigationUI();
+    
+    // Refresh page data
+    if (typeof loadGallery === 'function') loadGallery();
+    if (typeof checkAccess === 'function') checkAccess();
+    
+    return user;
+  } catch (error) {
+    console.error("Google Sign-In Error:", error.message);
+    showToast("Google Sign-In failed", "error");
   }
 }
 
@@ -225,7 +266,7 @@ async function updateNavigationUI() {
   };
   
   if (user) {
-    if (els.userStatus) els.userStatus.innerText = `👤 ${user.email}`;
+    if (els.userStatus) els.userStatus.innerText = `ðŸ‘¤ ${user.email}`;
     if (els.authToggle) {
       els.authToggle.innerText = "Logout";
       els.authToggle.onclick = logoutUser;
@@ -276,3 +317,4 @@ auth.onAuthStateChanged(user => {
   if (typeof handleAdminInit === 'function') handleAdminInit();
   if (typeof checkAccess === 'function') checkAccess();
 });
+

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -44,10 +44,21 @@
       
       <div class="form-group">
         <label for="auth-password">Password</label>
-        <input type="password" id="auth-password" placeholder="••••••••">
+        <input type="password" id="auth-password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢">
       </div>
       
-      <button id="auth-submit-btn" class="btn-primary" style="width: 100%; margin-top: 1rem;" onclick="submitAuth()">Sign In</button>
+      <button id="auth-submit-btn" class="btn-primary" style="width: 100%; margin-top: 1rem;" onclick="submitAuth()">Login</button>
+      
+      <div style="display: flex; align-items: center; margin: 1.5rem 0; color: #64748b;">
+        <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+        <span style="padding: 0 1rem; font-size: 0.8125rem; font-weight: 600; text-transform: uppercase;">or</span>
+        <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+      </div>
+      
+      <button onclick="signInWithGoogle()" class="btn-google" style="width: 100%; background: #fff; color: #1e293b; border: none; padding: 0.75rem; border-radius: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.75rem; cursor: pointer; transition: all 0.2s;">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20" alt="Google">
+        Continue with Google
+      </button>
       
       <div class="auth-links">
         <a href="#" onclick="toggleLoginSignup(event)" style="color: #6366f1; text-decoration: none; font-weight: 600;">Don't have an account? Sign up</a>
@@ -76,3 +87,4 @@
   </script>
 </body>
 </html>
+

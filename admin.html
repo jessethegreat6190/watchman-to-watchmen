@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -33,7 +33,7 @@
     <div id="admin-panel-section" style="display: none;">
       <!-- Quick Post Section -->
       <div class="admin-panel">
-        <h2 style="margin-bottom: 0.5rem; color: #fff; font-weight: 800;">📤 Quick Post</h2>
+        <h2 style="margin-bottom: 0.5rem; color: #fff; font-weight: 800;">ðŸ“¤ Quick Post</h2>
         <p style="color: #94a3b8; margin-bottom: 2rem; font-size: 0.9375rem;">Upload directly to the gallery as an administrator</p>
         
         <div class="form-group">
@@ -66,7 +66,7 @@
 
       <!-- User Management Section -->
       <div class="admin-panel" style="margin-top: 2rem;">
-        <h2 style="margin-bottom: 0.5rem; color: #fff; font-weight: 800;">👨‍💼 Door Pass Control</h2>
+        <h2 style="margin-bottom: 0.5rem; color: #fff; font-weight: 800;">ðŸ‘¨â€ðŸ’¼ Door Pass Control</h2>
         <p style="color: #94a3b8; margin-bottom: 2rem; font-size: 0.9375rem;">Grant or revoke upload permissions for users</p>
         
         <div class="form-group">
@@ -82,7 +82,7 @@
 
       <!-- Stats Section -->
       <div class="admin-panel" style="margin-top: 2rem;">
-        <h2 style="margin-bottom: 1.5rem; color: #fff; font-weight: 800;">📊 Platform Statistics</h2>
+        <h2 style="margin-bottom: 1.5rem; color: #fff; font-weight: 800;">ðŸ“Š Platform Statistics</h2>
         <div class="stats-grid">
           <div class="stat-card">
             <h3 id="total-images">0</h3>
@@ -90,7 +90,7 @@
           </div>
           <div class="stat-card" style="border-color: rgba(245, 158, 11, 0.2);">
             <h3 id="pending-images-count" style="color: #f59e0b;">0</h3>
-            <p>⏳ Pending Approval</p>
+            <p>â³ Pending Approval</p>
           </div>
           <div class="stat-card">
             <h3 id="total-users">0</h3>
@@ -108,7 +108,7 @@
 
         <div style="margin-top: 2.5rem;">
           <button class="btn-primary" onclick="showPendingApprovalsAdmin()" style="background: #f59e0b; width: 100%; padding: 1.25rem;">
-            📋 Review Pending Approvals
+            ðŸ“‹ Review Pending Approvals
           </button>
         </div>
       </div>
@@ -126,9 +126,20 @@
       </div>
       <div class="form-group">
         <label for="auth-password">Password</label>
-        <input type="password" id="auth-password" placeholder="••••••••">
+        <input type="password" id="auth-password" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢">
       </div>
-      <button id="auth-submit-btn" class="btn-primary" style="width: 100%; margin-top: 1rem;" onclick="submitAuth()">Sign In</button>
+      <button id="auth-submit-btn" class="btn-primary" style="width: 100%; margin-top: 1rem;" onclick="submitAuth()">Login</button>
+      
+      <div style="display: flex; align-items: center; margin: 1.5rem 0; color: #64748b;">
+        <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+        <span style="padding: 0 1rem; font-size: 0.8125rem; font-weight: 600; text-transform: uppercase;">or</span>
+        <div style="flex: 1; height: 1px; background: rgba(255,255,255,0.1);"></div>
+      </div>
+      
+      <button onclick="signInWithGoogle()" class="btn-google" style="width: 100%; background: #fff; color: #1e293b; border: none; padding: 0.75rem; border-radius: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.75rem; cursor: pointer; transition: all 0.2s;">
+        <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20" alt="Google">
+        Continue with Google
+      </button>
       <div class="auth-links">
         <a href="#" onclick="toggleLoginSignup(event)" style="color: #6366f1; text-decoration: none; font-weight: 600;">Need an account? Sign up</a>
       </div>

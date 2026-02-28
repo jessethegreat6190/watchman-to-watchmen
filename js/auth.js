@@ -271,7 +271,7 @@ async function updateNavigationUI() {
   };
   
   if (user) {
-    if (els.userStatus) els.userStatus.innerText = `ðŸ‘¤ ${user.email}`;
+    if (els.userStatus) els.userStatus.innerText = `👤 ${user.email}`;
     if (els.authToggle) {
       els.authToggle.innerText = "Logout";
       els.authToggle.onclick = logoutUser;

@@ -86,6 +86,7 @@ function toggleLoginSignup(event) {
   }
 }
 
+
 async function submitAuth() {
   const email = document.getElementById("auth-email").value.trim();
   const password = document.getElementById("auth-password").value;
@@ -102,33 +103,25 @@ async function submitAuth() {
   }
   
   try {
+    let user;
     if (isLoginMode) {
-      await loginUser(email, password);
+      user = await loginUser(email, password);
     } else {
-      await signUpUser(email, password);
+      user = await signUpUser(email, password);
     }
     
-    if (auth.currentUser) {
+    if (user) {
       closeAuthModal();
-      await updateAdminStatus();
-      updateNavigationUI();
-      // Reactive updates for specific pages
-      if (typeof loadGallery === 'function') loadGallery();
-      if (typeof checkAccess === 'function') checkAccess();
-      if (window.isCurrentUserAdmin && typeof loadAllUsers === 'function') {
-        loadAllUsers();
-        loadStatistics();
-      }
+      // Auth state change listener will handle the rest (updateNavigationUI, etc)
     }
   } finally {
     if (submitBtn) {
       submitBtn.disabled = false;
       submitBtn.classList.remove("btn-loading");
     }
-    if (document.getElementById("auth-email")) document.getElementById("auth-email").value = "";
-    if (document.getElementById("auth-password")) document.getElementById("auth-password").value = "";
   }
 }
+
 
 // Check if user has upload permission (door pass)
 async function hasUploadPermission(uid) {
@@ -331,6 +324,7 @@ async function signInWithGoogle() {
 
 async function signInWithGitHub() {
   const provider = new firebase.auth.GithubAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
   try {
     const result = await auth.signInWithPopup(provider);
     await handleSocialLogin(result, "github");

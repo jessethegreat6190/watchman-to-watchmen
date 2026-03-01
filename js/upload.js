@@ -172,3 +172,28 @@ async function loadUserImages() {
     userImagesDiv.innerHTML = '<p style="text-align: center; color: #94a3b8;">Failed to load your collection.</p>';
   }
 }
+
+// Preview selected image
+function previewImage(event) {
+  const file = event.target.files[0];
+  const previewContainer = document.getElementById("image-preview");
+  const previewImg = document.getElementById("preview-img");
+  
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      previewImg.src = e.target.result;
+      previewContainer.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+  } else {
+    removeSelectedFile();
+  }
+}
+
+// Remove selected file and preview
+function removeSelectedFile() {
+  document.getElementById("image-file").value = "";
+  document.getElementById("image-preview").style.display = "none";
+  document.getElementById("preview-img").src = "";
+}

@@ -127,7 +127,7 @@ async function submitAuth() {
 async function hasUploadPermission(uid) {
   try {
     const doc = await db.collection("users").doc(uid).get();
-    return doc.exists && (doc.data().doorPass === true || doc.data().role === "admin");
+    return doc.exists && doc.data().role === "admin";
   } catch (error) {
     console.error("Error checking permission:", error);
     return false;
@@ -234,11 +234,10 @@ async function updateNavigationUI() {
     const doc = await db.collection("users").doc(user.uid).get();
     const userData = doc.exists ? doc.data() : {};
     const isAdmin = userData.role === "admin";
-    const hasDoorPass = userData.doorPass === true || isAdmin;
     
     window.isCurrentUserAdmin = isAdmin;
     
-    if (els.upload) els.upload.style.display = hasDoorPass ? "inline-block" : "none";
+    if (els.upload) els.upload.style.display = isAdmin ? "inline-block" : "none";
     if (els.admin) els.admin.style.display = isAdmin ? "inline-block" : "none";
   } else {
     if (els.userStatus) els.userStatus.innerText = "Not logged in";

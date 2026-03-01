@@ -179,3 +179,35 @@ async function updateAdminStatus() {
   window.isCurrentUserAdmin = doc.exists && doc.data().role === "admin";
   return window.isCurrentUserAdmin;
 }
+
+async function submitComment(imageId) {
+  const input = document.getElementById("comment-text");
+  const text = input.value.trim();
+  if (!text) return;
+  
+  const user = auth.currentUser;
+  if (!user) {
+    showToast("Please login to comment", "warning");
+    toggleAuth();
+    return;
+  }
+  
+  try {
+    const comment = {
+      uid: user.uid,
+      userName: user.displayName || user.email.split('@')[0],
+      text: text,
+      createdAt: new Date()
+    };
+    
+    await db.collection("images").doc(imageId).update({
+      comments: firebase.firestore.FieldValue.arrayUnion(comment)
+    });
+    
+    input.value = "";
+    openLightbox(imageId); // Refresh lightbox to show new comment
+  } catch (error) {
+    console.error("Error submitting comment:", error);
+    showToast("Failed to post comment", "error");
+  }
+}

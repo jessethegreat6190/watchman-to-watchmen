@@ -345,3 +345,27 @@ async function showPendingApprovalsAdmin() {
       showToast("Could not load approvals", "error");
     }
 }
+// Preview selected image (Admin)
+function previewAdminImage(event) {
+  const file = event.target.files[0];
+  const previewContainer = document.getElementById("admin-image-preview");
+  const previewImg = document.getElementById("admin-preview-img");
+  
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      previewImg.src = e.target.result;
+      previewContainer.style.display = "block";
+    };
+    reader.readAsDataURL(file);
+  } else {
+    removeAdminSelectedFile();
+  }
+}
+
+// Remove selected file and preview (Admin)
+function removeAdminSelectedFile() {
+  document.getElementById("admin-image-file").value = "";
+  document.getElementById("admin-image-preview").style.display = "none";
+  document.getElementById("admin-preview-img").src = "";
+}

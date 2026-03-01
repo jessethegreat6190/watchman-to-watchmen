@@ -37,18 +37,33 @@
         <p style="color: #94a3b8; margin-bottom: 2rem; font-size: 0.9375rem;">Upload directly to the gallery as an administrator</p>
         
         <div class="form-group">
-        <input type="text" id="admin-image-title" placeholder="What's this about?">
-        <label for="admin-image-title">Inspiration Title *</label>
+          <input type="text" id="admin-image-title" placeholder=" ">
+          <label for="admin-image-title">Inspiration Title *</label>
         </div>
         
         <div class="form-group">
-        <textarea id="admin-image-description" placeholder="Share the story behind this image..." style="background: #0f172a; border: 1px solid #334155; color: #fff; border-radius: 8px; padding: 0.75rem; width: 100%; min-height: 80px;">
-        <label for="admin-image-description">Short Description</label></textarea>
+          <textarea id="admin-image-description" placeholder=" "></textarea>
+          <label for="admin-image-description">Short Description</label>
+        </div>
+        <div class="form-group">
+          <select id="admin-image-category" style="width: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 0.75rem 1rem; color: #fff; font-family: inherit; font-size: 1rem; appearance: none;">
+            <option value="General">General</option>
+            <option value="Prayer">Prayer</option>
+            <option value="Scripture">Scripture</option>
+            <option value="Nature">Nature</option>
+            <option value="Testimony">Testimony</option>
+            <option value="Worship">Worship</option>
+          </select>
+          <label for="admin-image-category" style="position: absolute; top: -0.6rem; left: 1rem; background: #1e293b; padding: 0 0.5rem; font-size: 0.75rem; color: #6366f1; font-weight: 700;">Category</label>
         </div>
         
         <div class="form-group">
-        <input type="file" id="admin-image-file" accept="image/*" style="padding: 0.6rem; background: #0f172a; border: 1px dashed #334155;" placeholder=" ">
-        <label for="admin-image-file">Image File *</label>
+          <input type="file" id="admin-image-file" accept="image/*" style="padding: 0.6rem; background: #0f172a; border: 1px dashed #334155;" placeholder=" " onchange="previewAdminImage(event)">
+          <label for="admin-image-file">Image File *</label>
+          <div id="admin-image-preview" style="display: none; margin-top: 1rem; position: relative;">
+            <img id="admin-preview-img" src="" alt="Preview" style="width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+            <button onclick="removeAdminSelectedFile()" style="position: absolute; top: 10px; right: 10px; background: rgba(239, 68, 68, 0.9); border: none; color: white; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-weight: bold;">×</button>
+          </div>
         </div>
         
         <button class="btn-primary" id="admin-upload-btn" onclick="uploadImageAdmin()" style="width: 100%; margin-top: 1rem;">Post to Gallery</button>
@@ -64,23 +79,16 @@
         </div>
       </div>
 
-      <!-- User Management Section -->
+      
+
+      <!-- Stats Section -->
       <div class="admin-panel" style="margin-top: 2rem;">
-        <h2 style="margin-bottom: 0.5rem; color: #fff; font-weight: 800;">👨‍💼 Door Pass Control</h2>
-        <p style="color: #94a3b8; margin-bottom: 2rem; font-size: 0.9375rem;">Grant or revoke upload permissions for users</p>
-        
-        <div class="form-group">
-        <input type="text" id="user-email" placeholder="Enter user's email address" onkeyup="searchUsers()">
-        <label for="user-email">Search User by Email</label>
-        </div>
-        
-        <div id="user-list" class="user-list" style="margin-top: 1.5rem;"></div>
-        <div id="no-users" style="text-align: center; padding: 3rem; color: #64748b; background: #0f172a; border-radius: 12px;">
-          <p>No matching users found</p>
+        <h2 style="margin-bottom: 1rem; color: #fff; font-weight: 800;">🔥 Most Popular Inspirations</h2>
+        <div id="popular-images-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem;">
+          <p style="color: #64748b;">Loading trends...</p>
         </div>
       </div>
 
-      <!-- Stats Section -->
       <div class="admin-panel" style="margin-top: 2rem;">
         <h2 style="margin-bottom: 1.5rem; color: #fff; font-weight: 800;">📊 Platform Statistics</h2>
         <div class="stats-grid">

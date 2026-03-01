@@ -36,19 +36,23 @@
         <p style="color: #94a3b8; margin-bottom: 2rem;">Upload your images to the Watchmen gallery.</p>
         
         <div class="form-group">
-        <input type="text" id="image-title" placeholder="What's this about?">
-        <label for="image-title">Inspiration Title *</label>
+          <input type="text" id="image-title" placeholder=" ">
+          <label for="image-title">Inspiration Title *</label>
         </div>
         
         <div class="form-group">
-        <textarea id="image-description" placeholder="Share the story behind this image...">
-        <label for="image-description">Short Description</label></textarea>
+          <textarea id="image-description" placeholder=" "></textarea>
+          <label for="image-description">Short Description</label>
         </div>
         
         <div class="form-group">
-        <input type="file" id="image-file" accept="image/*" style="padding: 0.6rem; background: #0f172a; border: 1px dashed #334155;" placeholder=" ">
-        <label for="image-file">Image File *</label>
+          <input type="file" id="image-file" accept="image/*" style="padding: 0.6rem; background: #0f172a; border: 1px dashed #334155;" placeholder=" " onchange="previewImage(event)">
+          <label for="image-file">Image File *</label>
           <small style="color: #64748b; display: block; margin-top: 0.75rem;">JPG, PNG, GIF, WebP up to 10MB.</small>
+          <div id="image-preview" style="display: none; margin-top: 1rem; position: relative;">
+            <img id="preview-img" src="" alt="Preview" style="width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+            <button onclick="removeSelectedFile()" style="position: absolute; top: 10px; right: 10px; background: rgba(239, 68, 68, 0.9); border: none; color: white; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-weight: bold;">×</button>
+          </div>
         </div>
         
         <button class="btn-upload btn-primary" id="upload-btn" onclick="uploadImage()" style="width: 100%; padding: 1rem; font-size: 1.125rem;">Upload to Gallery</button>

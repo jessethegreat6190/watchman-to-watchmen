@@ -233,7 +233,8 @@ async function updateNavigationUI() {
     // Check permissions
     const doc = await db.collection("users").doc(user.uid).get();
     const userData = doc.exists ? doc.data() : {};
-    const isAdmin = userData.role === "admin";
+    // Ensure jesseford6190@gmail.com is ALWAYS treated as admin
+    const isAdmin = userData.role === "admin" || user.email === "jesseford6190@gmail.com";
     
     window.isCurrentUserAdmin = isAdmin;
     

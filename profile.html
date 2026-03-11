@@ -23,36 +23,40 @@
   </nav>
 
   <div class="container">
-    <div class="profile-header" style="background: #1e293b; border-radius: 24px; padding: 3rem; margin-bottom: 3rem; text-align: center; border: 1px solid rgba(255, 255, 255, 0.05);">
+    <div class="profile-header" style="background: linear-gradient(180deg, #14141c 0%, #0e0e14 100%); border-radius: 24px; padding: 3rem; margin-bottom: 3rem; text-align: center; border: 1px solid rgba(99, 102, 241, 0.15); box-shadow: 0 16px 48px -12px rgba(0, 0, 0, 0.4);">
       <div id="profile-photo-container" style="position: relative; display: inline-block; margin-bottom: 1.5rem;">
-        <img id="profile-photo" src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff&size=128" alt="Profile" style="width: 128px; height: 128px; border-radius: 50%; object-fit: cover; border: 4px solid #6366f1;">
-        <button id="edit-photo-btn" onclick="document.getElementById('photo-upload').click()" style="display: none; position: absolute; bottom: 0; right: 0; background: #6366f1; border: none; color: white; border-radius: 50%; width: 36px; height: 36px; cursor: pointer;">📷</button>
+        <img id="profile-photo" src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff&size=128" alt="Profile" style="width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 4px solid #6366f1; box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);">
+        <button id="edit-photo-btn" onclick="document.getElementById('photo-upload').click()" style="display: none; position: absolute; bottom: 0; right: 0; background: #6366f1; border: none; color: white; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);">📷</button>
         <input type="file" id="photo-upload" accept="image/*" style="display: none;" onchange="uploadProfilePhoto(event)">
       </div>
       
-      <h2 id="profile-name" style="font-size: 2.5rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem;">Loading...</h2>
-      <p id="profile-email" style="color: #94a3b8; font-size: 1.1rem; margin-bottom: 1rem;"></p>
+      <h2 id="profile-name" style="font-size: 2.25rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; letter-spacing: -0.02em;">Loading...</h2>
+      <p id="profile-email" style="color: #64748b; font-size: 1rem; margin-bottom: 1rem;"></p>
       
-      <div id="profile-stats" style="display: flex; justify-content: center; gap: 2rem; margin: 1.5rem 0; color: #fff; font-weight: 600;">
-        <div style="cursor: pointer;" onclick="showFollowers()">
-          <span id="follower-count" style="font-size: 1.25rem; display: block;">0</span>
+      <div id="profile-stats" style="display: flex; justify-content: center; gap: 3rem; margin: 2rem 0; color: #fff; font-weight: 600;">
+        <div style="cursor: pointer; padding: 1rem 2rem; background: rgba(255,255,255,0.03); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); transition: all 0.25s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+          <span id="pins-count" style="font-size: 1.5rem; display: block; color: #6366f1;">0</span>
+          <span style="color: #64748b; font-size: 0.875rem;">Pins</span>
+        </div>
+        <div style="cursor: pointer; padding: 1rem 2rem; background: rgba(255,255,255,0.03); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); transition: all 0.25s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+          <span id="follower-count" style="font-size: 1.5rem; display: block; color: #10b981;">0</span>
           <span style="color: #64748b; font-size: 0.875rem;">Followers</span>
         </div>
-        <div style="cursor: pointer;" onclick="showFollowing()">
-          <span id="following-count" style="font-size: 1.25rem; display: block;">0</span>
+        <div style="cursor: pointer; padding: 1rem 2rem; background: rgba(255,255,255,0.03); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); transition: all 0.25s;" onmouseover="this.style.background='rgba(255,255,255,0.06)'" onmouseout="this.style.background='rgba(255,255,255,0.03)'">
+          <span id="following-count" style="font-size: 1.5rem; display: block; color: #f59e0b;">0</span>
           <span style="color: #64748b; font-size: 0.875rem;">Following</span>
         </div>
       </div>
 
       <div id="profile-actions" style="margin-top: 2rem; display: flex; justify-content: center; gap: 1rem;">
         <button id="follow-btn" class="btn-primary" style="display: none; min-width: 150px;" onclick="toggleFollow()">Follow</button>
-        <button id="edit-profile-btn" class="btn-primary" style="display: none; min-width: 150px; background: #334155;" onclick="openEditProfileModal()">Edit Profile</button>
+        <button id="edit-profile-btn" class="btn-primary" style="display: none; min-width: 150px; background: linear-gradient(135deg, #334155, #1e293b);" onclick="openEditProfileModal()">✏️ Edit Profile</button>
       </div>
     </div>
 
-    <div class="profile-tabs" style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 1rem;">
-      <button id="pins-tab" class="tab-btn active" onclick="switchTab('pins')" style="background: none; border: none; color: #fff; font-size: 1.1rem; font-weight: 700; cursor: pointer; padding-bottom: 1.1rem; margin-bottom: -1.1rem; border-bottom: 3px solid #6366f1;">Pins</button>
-      <button id="boards-tab" class="tab-btn" onclick="switchTab('boards')" style="background: none; border: none; color: #94a3b8; font-size: 1.1rem; font-weight: 700; cursor: pointer;">Boards</button>
+    <div class="profile-tabs" style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 2rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 0;">
+      <button id="pins-tab" class="tab-btn active" onclick="switchTab('pins')" style="background: none; border: none; color: #6366f1; font-size: 1.125rem; font-weight: 700; cursor: pointer; padding: 1rem 2rem; border-bottom: 3px solid #6366f1; margin-bottom: -1px;">🖼️ Pins</button>
+      <button id="boards-tab" class="tab-btn" onclick="switchTab('boards')" style="background: none; border: none; color: #64748b; font-size: 1.125rem; font-weight: 700; cursor: pointer; padding: 1rem 2rem;">📋 Boards</button>
     </div>
 
     <div id="profile-content" class="gallery">

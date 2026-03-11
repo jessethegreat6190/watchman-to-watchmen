@@ -1,15 +1,40 @@
 let allImages = [];
+let loadedImages = [];
+let currentPage = 0;
+const IMAGES_PER_PAGE = 12;
+let isLoading = false;
+let hasMore = true;
+
 // Gallery functionality
 // Load gallery on page load
 document.addEventListener("DOMContentLoaded", async () => {
   await updateAdminStatus(); // Initial admin check
   loadGallery();
+  setupInfiniteScroll();
 });
+
+// Setup infinite scroll
+function setupInfiniteScroll() {
+  window.addEventListener('scroll', () => {
+    if (isLoading || !hasMore) return;
+    
+    const scrollPosition = window.innerHeight + window.scrollY;
+    const pageHeight = document.documentElement.scrollHeight;
+    
+    if (scrollPosition >= pageHeight - 500) {
+      loadMoreImages();
+    }
+  });
+}
 
 // Load images from Firestore
 async function loadGallery() {
   const gallery = document.getElementById("gallery");
   if (!gallery) return;
+  
+  currentPage = 0;
+  loadedImages = [];
+  hasMore = true;
   
   try {
     gallery.innerHTML = '<div class="spinner"></div>';
@@ -25,13 +50,59 @@ async function loadGallery() {
     });
     
     renderGallery();
+    loadMoreImages(); // Load first batch
   } catch (error) {
     console.error("Error loading gallery:", error);
     if (gallery) gallery.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: white; padding: 2rem;"><h3>Error loading gallery</h3><p>' + error.message + '</p></div>';
   }
 }
 
-function renderGallery(imagesToRender = allImages) {
+// Load more images (infinite scroll)
+async function loadMoreImages() {
+  if (isLoading || !hasMore) return;
+  isLoading = true;
+  
+  const gallery = document.getElementById("gallery");
+  const spinner = gallery.querySelector('.spinner');
+  
+  const start = currentPage * IMAGES_PER_PAGE;
+  const end = start + IMAGES_PER_PAGE;
+  const batch = allImages.slice(start, end);
+  
+  if (batch.length === 0) {
+    hasMore = false;
+    isLoading = false;
+    return;
+  }
+  
+  // Add loading spinner if not first batch
+  if (currentPage > 0 && spinner) {
+    spinner.remove();
+  }
+  
+  batch.forEach(img => {
+    loadedImages.push(img);
+    const card = createImageCard(img.id, img, true);
+    gallery.appendChild(card);
+  });
+  
+  currentPage++;
+  
+  if (end >= allImages.length) {
+    hasMore = false;
+    if (gallery.children.length > 0 && !gallery.querySelector('.end-message')) {
+      const endMsg = document.createElement('div');
+      endMsg.className = 'end-message';
+      endMsg.style.cssText = 'grid-column: 1/-1; text-align: center; padding: 2rem; color: #64748b;';
+      endMsg.innerHTML = '✨ You\'ve seen it all!';
+      gallery.appendChild(endMsg);
+    }
+  }
+  
+  isLoading = false;
+}
+
+function renderGallery(imagesToRender = loadedImages) {
   const gallery = document.getElementById("gallery");
   if (!gallery) return;
   
@@ -55,12 +126,35 @@ function filterGallery() {
   
   const searchTerm = searchInput.value.toLowerCase();
   
+  if (!searchTerm) {
+    // Reset to all images
+    loadedImages = [];
+    currentPage = 0;
+    hasMore = true;
+    renderGallery();
+    loadMoreImages();
+    return;
+  }
+  
   const filtered = allImages.filter(img => {
     return img.title.toLowerCase().includes(searchTerm) || 
            (img.description && img.description.toLowerCase().includes(searchTerm));
   });
   
-  renderGallery(filtered);
+  // Show filtered results without infinite scroll
+  const gallery = document.getElementById("gallery");
+  gallery.innerHTML = "";
+  hasMore = false;
+  
+  if (filtered.length === 0) {
+    gallery.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: #94a3b8;">No matches found.</div>';
+    return;
+  }
+  
+  filtered.forEach(img => {
+    const card = createImageCard(img.id, img, true);
+    gallery.appendChild(card);
+  });
 }
 
 

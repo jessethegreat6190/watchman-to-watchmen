@@ -24,6 +24,7 @@ async function loadProfile() {
   const profileName = document.getElementById("profile-name");
   const profileEmail = document.getElementById("profile-email");
   const profilePhoto = document.getElementById("profile-photo");
+  const pinsCount = document.getElementById("pins-count");
   const followerCount = document.getElementById("follower-count");
   const followingCount = document.getElementById("following-count");
   const followBtn = document.getElementById("follow-btn");
@@ -45,6 +46,13 @@ async function loadProfile() {
     profileEmail.innerText = isOwnProfile ? profileData.email : "";
     if (profileData.photoURL) profilePhoto.src = profileData.photoURL;
     else profilePhoto.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(profileName.innerText)}&background=6366f1&color=fff&size=128`;
+    
+    // Get pins count from images collection
+    const pinsSnapshot = await db.collection("images")
+      .where("uploadedByUid", "==", profileUid)
+      .where("status", "==", "approved")
+      .get();
+    pinsCount.innerText = pinsSnapshot.size;
     
     followerCount.innerText = (profileData.followers || []).length;
     followingCount.innerText = (profileData.following || []).length;

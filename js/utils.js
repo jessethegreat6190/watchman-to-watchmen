@@ -56,6 +56,7 @@ async function openLightbox(imageId) {
     const userLiked = data.likedBy && auth.currentUser && data.likedBy.includes(auth.currentUser.uid);
     const uploadedBy = data.uploadedBy || "Unknown";
     const uploadDate = data.createdAt ? new Date(data.createdAt.toDate()).toLocaleDateString() : "N/A";
+    const comments = data.comments || [];
 
     lightbox.innerHTML = `
       <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
@@ -64,24 +65,48 @@ async function openLightbox(imageId) {
           <img src="${data.url}" alt="${data.title}">
         </div>
         <div class="lightbox-info">
-          <h2 style="font-weight: 800; font-size: 1.75rem;">${data.title || 'Untitled'}</h2>
-          <div style="display: flex; align-items: center; gap: 1rem;">
-            <button class="heart-btn ${userLiked ? 'active' : ''}" onclick="toggleHeart(event, '${imageId}', true)">
-              ${userLiked ? '❤️' : '🤍'} <span>${data.likesCount || 0} Likes</span>
-            </button>
+          <div style="flex: 1; overflow-y: auto; padding-right: 0.5rem;">
+            <h2 style="font-weight: 800; font-size: 1.75rem;">${data.title || 'Untitled'}</h2>
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+              <button class="heart-btn ${userLiked ? 'active' : ''}" onclick="toggleHeart(event, '${imageId}', true)">
+                ${userLiked ? '❤️' : '🤍'} <span>${data.likesCount || 0} Likes</span>
+              </button>
+            </div>
+            <p style="color: var(--text-secondary); line-height: 1.6;">${data.description || "No description provided."}</p>
+            <hr style="border: none; border-top: 1px solid var(--border-color); margin: 1rem 0;">
+            <p style="font-size: 0.9rem;"><strong>Uploaded By:</strong> ${uploadedBy}</p>
+            <p style="font-size: 0.9rem;"><strong>Date:</strong> ${uploadDate}</p>
+            
+            <h3 style="margin-top: 1.5rem; font-size: 1.1rem;">Comments (${comments.length})</h3>
+            <div id="comments-list" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 1rem;">
+              ${comments.length === 0 ? '<p style="color: #94a3b8; font-style: italic;">No comments yet. Be the first!</p>' : 
+                comments.map(c => `
+                  <div class="comment" style="background: rgba(255,255,255,0.03); padding: 0.75rem; border-radius: 12px; border-left: 3px solid #6366f1;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                      <span style="font-weight: 700; font-size: 0.85rem;">${c.userName}</span>
+                      <span style="font-size: 0.75rem; color: #64748b;">${new Date(c.createdAt.toDate ? c.createdAt.toDate() : c.createdAt).toLocaleDateString()}</span>
+                    </div>
+                    <p style="font-size: 0.9rem; margin: 0; line-height: 1.4;">${c.text}</p>
+                  </div>
+                `).join('')
+              }
+            </div>
           </div>
-          <p style="color: var(--text-secondary); line-height: 1.6;">${data.description || "No description provided."}</p>
-          <hr style="border: none; border-top: 1px solid var(--border-color); margin: 1rem 0;">
-          <p style="font-size: 0.9rem;"><strong>Uploaded By:</strong> ${uploadedBy}</p>
-          <p style="font-size: 0.9rem;"><strong>Date:</strong> ${uploadDate}</p>
-          
-          <h3 style="margin-top: 1rem; font-size: 1rem;">Share Inspiration</h3>
-          <div class="share-options">
-            <button class="share-btn" onclick="shareImage('whatsapp', '${data.url}', '${data.title}')" title="WhatsApp">🟢</button>
-            <button class="share-btn" onclick="shareImage('twitter', '${data.url}', '${data.title}')" title="Twitter">🔵</button>
-            <button class="share-btn" onclick="shareImage('copy', '${data.url}', '${data.title}')" title="Copy Link">🔗</button>
+
+          <div style="margin-top: 1.5rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+              <input type="text" id="comment-text" placeholder="Add a comment..." style="flex: 1; padding: 0.75rem; border-radius: 12px; background: #0f172a; border: 1px solid #334155; color: #fff;">
+              <button class="btn-primary" onclick="submitComment('${imageId}')" style="padding: 0.75rem 1.25rem;">Post</button>
+            </div>
+
+            <h3 style="margin-top: 1rem; font-size: 1rem;">Share Inspiration</h3>
+            <div class="share-options" style="margin-bottom: 1.5rem;">
+              <button class="share-btn" onclick="shareImage('whatsapp', '${data.url}', '${data.title}')" title="WhatsApp">🟢</button>
+              <button class="share-btn" onclick="shareImage('twitter', '${data.url}', '${data.title}')" title="Twitter">🔵</button>
+              <button class="share-btn" onclick="shareImage('copy', '${data.url}', '${data.title}')" title="Copy Link">🔗</button>
+            </div>
+            <button class="btn-primary" style="width: 100%;" onclick="downloadImage('${data.url}', '${data.title}')">Download HD</button>
           </div>
-          <button class="btn-primary" style="margin-top: auto; width: 100%;" onclick="downloadImage('${data.url}', '${data.title}')">Download HD</button>
         </div>
       </div>
     `;
@@ -111,6 +136,11 @@ async function toggleHeart(event, imageId, fromLightbox = false) {
       await imageRef.update({ likedBy: firebase.firestore.FieldValue.arrayRemove(uid), likesCount: firebase.firestore.FieldValue.increment(-1) });
     } else {
       await imageRef.update({ likedBy: firebase.firestore.FieldValue.arrayUnion(uid), likesCount: firebase.firestore.FieldValue.increment(1) });
+      
+      // Notify owner
+      if (data.uploadedByUid !== uid) {
+        createNotification(data.uploadedByUid, 'like', imageId, data.title);
+      }
     }
     
     if (fromLightbox) {
@@ -193,6 +223,9 @@ async function submitComment(imageId) {
   }
   
   try {
+    const doc = await db.collection("images").doc(imageId).get();
+    const data = doc.data();
+    
     const comment = {
       uid: user.uid,
       userName: user.displayName || user.email.split('@')[0],
@@ -204,10 +237,60 @@ async function submitComment(imageId) {
       comments: firebase.firestore.FieldValue.arrayUnion(comment)
     });
     
+    // Notify owner
+    if (data.uploadedByUid !== user.uid) {
+      createNotification(data.uploadedByUid, 'comment', imageId, data.title);
+    }
+    
     input.value = "";
     openLightbox(imageId); // Refresh lightbox to show new comment
   } catch (error) {
     console.error("Error submitting comment:", error);
     showToast("Failed to post comment", "error");
   }
+}
+
+// Notification Functions
+async function createNotification(recipientUid, type, relatedId, relatedTitle = "") {
+  const currentUser = auth.currentUser;
+  if (!currentUser || currentUser.uid === recipientUid) return;
+  
+  try {
+    await db.collection("notifications").add({
+      recipientUid,
+      senderUid: currentUser.uid,
+      senderName: currentUser.displayName || currentUser.email.split('@')[0],
+      type,
+      relatedId,
+      relatedTitle,
+      read: false,
+      createdAt: new Date()
+    });
+  } catch (error) {
+    console.error("Error creating notification:", error);
+  }
+}
+
+let notificationListener = null;
+function listenForNotifications() {
+  const user = auth.currentUser;
+  if (!user) return;
+  
+  const countEl = document.getElementById("notification-count");
+  if (!countEl) return;
+  
+  if (notificationListener) notificationListener(); // Unsubscribe if exists
+  
+  notificationListener = db.collection("notifications")
+    .where("recipientUid", "==", user.uid)
+    .where("read", "==", false)
+    .onSnapshot(snapshot => {
+      const count = snapshot.size;
+      if (count > 0) {
+        countEl.innerText = count;
+        countEl.style.display = "block";
+      } else {
+        countEl.style.display = "none";
+      }
+    });
 }

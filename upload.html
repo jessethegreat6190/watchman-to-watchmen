@@ -14,6 +14,7 @@
     <h1><img src="Logo/logo.jpeg" alt="Watchmen Logo" style="height: 40px; border-radius: 8px;"> Watchmen</h1>
     <div class="nav-links">
       <a href="index.html">Gallery</a>
+      <a id="boards-link" href="boards.html" style="display: none;">Boards</a>
       <a id="upload-link" href="upload.html" class="active">Upload</a>
       <a id="admin-link" href="admin.html" style="display: none;">Admin</a>
       <div id="user-status"></div>
@@ -43,6 +44,18 @@
         <div class="form-group">
           <textarea id="image-description" placeholder=" "></textarea>
           <label for="image-description">Short Description</label>
+        </div>
+        
+        <div class="form-group">
+          <select id="board-select" style="width: 100%; padding: 0.8rem; background: #0f172a; border: 1px solid #334155; border-radius: 12px; color: #fff; margin-bottom: 1rem;">
+            <option value="">No Board (General)</option>
+          </select>
+          <label for="board-select" style="display: block; margin-bottom: 0.5rem; color: #94a3b8; font-size: 0.875rem;">Add to Board</label>
+        </div>
+
+        <div class="form-group">
+          <input type="text" id="image-section" placeholder=" ">
+          <label for="image-section">Board Section (e.g. Living Room, Outdoors)</label>
         </div>
         
         <div class="form-group">
@@ -136,23 +149,6 @@
         </div>
         <button class="modal-close-btn" onclick="closeAuthModal()">Skip for now</button>
       </div>
-    </div>
-  </div>
-      
-      <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem;">
-        <button onclick="signInWithGoogle()" class="btn-google" style="width: 100%; background: #fff; color: #1e293b; border: none; padding: 0.75rem; border-radius: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.75rem; cursor: pointer; transition: all 0.2s;">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20" alt="Google">
-          Continue with Google
-        </button>
-        <button onclick="signInWithGitHub()" class="btn-github" style="width: 100%; background: #24292e; color: #fff; border: none; padding: 0.75rem; border-radius: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.75rem; cursor: pointer; transition: all 0.2s;">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/github.svg" width="20" height="20" alt="GitHub">
-          Continue with GitHub
-        </button>
-      </div>
-      <div class="auth-links">
-        <a href="#" onclick="toggleLoginSignup(event)" style="color: #6366f1; text-decoration: none; font-weight: 600;">Need an account? Sign up</a>
-      </div>
-      <button class="modal-close-btn" onclick="closeAuthModal()">Skip for now</button>
     </div>
   </div>
 

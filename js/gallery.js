@@ -31,25 +31,38 @@ async function loadGallery() {
   }
 }
 
-function renderGallery() {
+function renderGallery(imagesToRender = allImages) {
   const gallery = document.getElementById("gallery");
-  const emptyState = document.getElementById("empty-state");
   if (!gallery) return;
   
   gallery.innerHTML = "";
   
-  if (allImages.length === 0) {
-    if (emptyState) emptyState.style.display = "block";
+  if (imagesToRender.length === 0) {
+    gallery.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: #94a3b8;">No matches found.</div>';
     return;
   }
   
-  if (emptyState) emptyState.style.display = "none";
-  
-  allImages.forEach(img => {
+  imagesToRender.forEach(img => {
     const card = createImageCard(img.id, img, true);
     gallery.appendChild(card);
   });
 }
+
+// Search and Filter functionality
+function filterGallery() {
+  const searchInput = document.getElementById("gallery-search");
+  if (!searchInput) return;
+  
+  const searchTerm = searchInput.value.toLowerCase();
+  
+  const filtered = allImages.filter(img => {
+    return img.title.toLowerCase().includes(searchTerm) || 
+           (img.description && img.description.toLowerCase().includes(searchTerm));
+  });
+  
+  renderGallery(filtered);
+}
+
 
 // Check for pending image approvals (ADMIN ONLY)
 async function checkForPendingApprovals() {

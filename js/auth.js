@@ -21,8 +21,13 @@ async function signUpUser(email, password) {
     showToast("Account created successfully!", "success");
     return result.user;
   } catch (error) {
-    console.error("Sign up error:", error.message);
-    showToast("Sign up failed: " + error.message, "error");
+    console.error("Sign up error:", error.code, error.message);
+    let errorMsg = "Sign up failed: " + error.message;
+    if (error.code === 'auth/email-already-in-use') errorMsg = "This email is already registered.";
+    else if (error.code === 'auth/weak-password') errorMsg = "Password should be at least 6 characters.";
+    
+    showToast(errorMsg, "error");
+    return null;
   }
 }
 
@@ -33,8 +38,14 @@ async function loginUser(email, password) {
     showToast("Welcome back!", "success");
     return result.user;
   } catch (error) {
-    console.error("Login error:", error.message);
-    showToast("Login failed: " + error.message, "error");
+    console.error("Login error:", error.code, error.message);
+    let errorMsg = "Login failed: " + error.message;
+    if (error.code === 'auth/user-not-found') errorMsg = "No account found with this email.";
+    else if (error.code === 'auth/wrong-password') errorMsg = "Incorrect password.";
+    else if (error.code === 'auth/invalid-email') errorMsg = "Invalid email format.";
+    
+    showToast(errorMsg, "error");
+    return null;
   }
 }
 // Google Sign In
@@ -213,46 +224,49 @@ async function rejectImage(imageId, reason = "") {
 
 // Centralized Navigation Update
 async function updateNavigationUI() {
-  const user = auth.currentUser;
+  const user = auth.currentUser || null;
   const els = {
+    boards: document.getElementById("boards-link"),
     upload: document.getElementById("upload-link"),
     admin: document.getElementById("admin-link"),
     authToggle: document.getElementById("auth-toggle"),
     userStatus: document.getElementById("user-status")
   };
   
+  // Check actual admin status from database
+  window.isCurrentUserAdmin = false;
   if (user) {
-    if (els.userStatus) els.userStatus.innerText = `👤 ${user.email}`;
-    if (els.authToggle) {
-      els.authToggle.innerText = "Logout";
-      els.authToggle.onclick = logoutUser;
-      els.authToggle.classList.add("logout-btn");
-      els.authToggle.classList.remove("btn-primary");
+    try {
+      const userDoc = await db.collection("users").doc(user.uid).get();
+      if (userDoc.exists && userDoc.data().role === "admin") {
+        window.isCurrentUserAdmin = true;
+      }
+    } catch (e) {
+      console.log("Admin check error:", e);
     }
-    
-    // Check permissions
-    const doc = await db.collection("users").doc(user.uid).get();
-    const userData = doc.exists ? doc.data() : {};
-    // Ensure jesseford6190@gmail.com is ALWAYS treated as admin
-    const isAdmin = userData.role === "admin" || user.email === "jesseford6190@gmail.com";
-    
-    window.isCurrentUserAdmin = isAdmin;
-    
-    if (els.upload) els.upload.style.display = isAdmin ? "inline-block" : "none";
-    if (els.admin) els.admin.style.display = isAdmin ? "inline-block" : "none";
-  } else {
-    if (els.userStatus) els.userStatus.innerText = "Not logged in";
-    if (els.authToggle) {
-      els.authToggle.innerText = "Login";
-      els.authToggle.onclick = toggleAuth;
-      els.authToggle.classList.remove("logout-btn");
-      els.authToggle.classList.add("btn-primary");
-      els.authToggle.style.width = "auto";
-      els.authToggle.style.padding = "0.5rem 1.2rem";
-    }
-    if (els.upload) els.upload.style.display = "none";
-    if (els.admin) els.admin.style.display = "none";
   }
+  
+  const displayUser = user || { email: "guest@watchmen.local", uid: "guest_uid", displayName: "Guest" };
+  
+  if (els.userStatus) {
+    els.userStatus.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <a href="notifications.html" id="notification-bell" style="text-decoration: none; position: relative;">
+          🔔 <span id="notification-count" style="display: none; position: absolute; top: -5px; right: -5px; background: #ef4444; color: #fff; font-size: 0.65rem; padding: 2px 5px; border-radius: 50%; font-weight: 800;">0</span>
+        </a>
+        <a href="profile.html?uid=${displayUser.uid}" style="color: #6366f1; text-decoration: none; font-weight: 600;">👤 ${displayUser.displayName || displayUser.email}</a>
+      </div>
+    `;
+  }
+
+  if (els.authToggle) {
+    els.authToggle.innerText = user ? "Logout" : "Login";
+    els.authToggle.onclick = user ? logoutUser : toggleAuth;
+  }
+  
+  if (els.boards) els.boards.style.display = "inline-block";
+  if (els.upload) els.upload.style.display = "inline-block";
+  if (els.admin) els.admin.style.display = "inline-block";
 }
 
 // Global modal background click listener

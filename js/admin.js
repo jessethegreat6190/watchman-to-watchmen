@@ -8,6 +8,16 @@ async function handleAdminInit() {
   
   if (!restrictedEl || !panelEl) return;
 
+  // Check bypass FIRST — set by updateNavigationUI in auth.js for demo/local mode
+  if (window.isCurrentUserAdmin) {
+    restrictedEl.style.display = "none";
+    panelEl.style.display = "block";
+    loadAllUsers();
+    loadStatistics();
+    loadBoardsForAdminSelect();
+    return;
+  }
+
   const user = auth.currentUser;
   
   if (!user) {
@@ -23,6 +33,7 @@ async function handleAdminInit() {
     panelEl.style.display = "block";
     loadAllUsers();
     loadStatistics();
+    loadBoardsForAdminSelect();
   } else {
     restrictedEl.style.display = "block";
     panelEl.style.display = "none";
@@ -157,6 +168,34 @@ async function loadStatistics() {
   }
 }
 
+// Load boards for admin dropdown
+async function loadBoardsForAdminSelect() {
+  const user = auth.currentUser;
+  if (!user) return;
+  
+  const boardSelect = document.getElementById("admin-board-select");
+  if (!boardSelect) return;
+  
+  try {
+    const snapshot = await db.collection("boards")
+      .where("createdByUid", "==", user.uid)
+      .orderBy("name", "asc")
+      .get();
+      
+    boardSelect.innerHTML = '<option value="">No Board (General)</option>';
+    
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const option = document.createElement("option");
+      option.value = doc.id;
+      option.innerText = data.name;
+      boardSelect.appendChild(option);
+    });
+  } catch (error) {
+    console.error("Error loading admin boards:", error);
+  }
+}
+
 // Admin Quick Post (Upload)
 async function uploadImageAdmin() {
   const user = auth.currentUser;
@@ -167,10 +206,18 @@ async function uploadImageAdmin() {
   
   const title = document.getElementById("admin-image-title").value.trim();
   const description = document.getElementById("admin-image-description").value.trim();
-  const file = document.getElementById("admin-image-file").files[0];
+  const file = document.getElementById("admin-image-file").files[0]
+            || document.getElementById("admin-camera-file").files[0];
+  const boardId = document.getElementById("admin-board-select").value;
+  const section = document.getElementById("admin-image-section").value.trim();
   
   if (!title || !file) {
     showToast("Title and image are required", "warning");
+    return;
+  }
+
+  if (file.size > 10 * 1024 * 1024) {
+    showToast("Image must be under 10 MB", "error");
     return;
   }
   
@@ -217,10 +264,24 @@ async function uploadImageAdmin() {
           status: "approved",
           verifiedByAdmin: true,
           approvedBy: user.uid,
-          approvedAt: new Date()
+          approvedAt: new Date(),
+          boardId: boardId || null,
+          section: section || "General"
         };
         
         await db.collection("images").add(imageData);
+
+        // Update board count if assigned to board
+        if (boardId) {
+          const boardRef = db.collection("boards").doc(boardId);
+          const boardDoc = await boardRef.get();
+          if (boardDoc.exists) {
+            await boardRef.update({
+              pinCount: (boardDoc.data().pinCount || 0) + 1,
+              coverImageUrl: boardDoc.data().coverImageUrl || downloadURL
+            });
+          }
+        }
         
         // Update user count for admin
         const userRef = db.collection("users").doc(user.uid);
@@ -249,6 +310,8 @@ function resetUploadFormAdmin() {
   document.getElementById("admin-image-title").value = "";
   document.getElementById("admin-image-description").value = "";
   document.getElementById("admin-image-file").value = "";
+  const camFile = document.getElementById("admin-camera-file");
+  if (camFile) camFile.value = "";
   if (uploadBtn) {
     uploadBtn.disabled = false;
     uploadBtn.innerText = "Post to Gallery";
@@ -348,24 +411,104 @@ async function showPendingApprovalsAdmin() {
 // Preview selected image (Admin)
 function previewAdminImage(event) {
   const file = event.target.files[0];
-  const previewContainer = document.getElementById("admin-image-preview");
-  const previewImg = document.getElementById("admin-preview-img");
-  
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = function(e) {
-      previewImg.src = e.target.result;
-      previewContainer.style.display = "block";
-    };
-    reader.readAsDataURL(file);
-  } else {
-    removeAdminSelectedFile();
-  }
+  handleAdminFile(file);
 }
 
 // Remove selected file and preview (Admin)
 function removeAdminSelectedFile() {
   document.getElementById("admin-image-file").value = "";
+  const camFile = document.getElementById("admin-camera-file");
+  if (camFile) camFile.value = "";
   document.getElementById("admin-image-preview").style.display = "none";
   document.getElementById("admin-preview-img").src = "";
+  const dropZone = document.getElementById("admin-drop-zone");
+  if (dropZone) dropZone.classList.remove("has-file");
 }
+
+// Copy admin URL to clipboard
+function copyAdminUrl() {
+  const url = window.location.href;
+  navigator.clipboard.writeText(url).then(() => {
+    showToast("Admin URL copied!", "success");
+  }).catch(() => {
+    showToast("Failed to copy URL", "error");
+  });
+}
+
+// Handle file from any input
+function handleAdminFile(file) {
+  const previewContainer = document.getElementById("admin-image-preview");
+  const previewImg = document.getElementById("admin-preview-img");
+
+  if (!file || !file.type.startsWith("image/")) {
+    removeAdminSelectedFile();
+    return;
+  }
+
+  if (file.size > 10 * 1024 * 1024) {
+    showToast("Image must be under 10 MB", "error");
+    removeAdminSelectedFile();
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    previewImg.src = e.target.result;
+    previewContainer.style.display = "block";
+    const dropZone = document.getElementById("admin-drop-zone");
+    if (dropZone) dropZone.classList.add("has-file");
+  };
+  reader.onerror = function() {
+    showToast("Could not read image. Please try again.", "error");
+  };
+  reader.readAsDataURL(file);
+}
+
+// Add Drag & Drop and Clipboard support for admin
+document.addEventListener("DOMContentLoaded", () => {
+  const adminFileInput = document.getElementById("admin-image-file");
+  if (!adminFileInput) return;
+  
+  // Show admin URL for mobile access
+  const adminUrlEl = document.getElementById("admin-url");
+  if (adminUrlEl) {
+    adminUrlEl.textContent = window.location.href;
+  }
+  
+  const dropZone = document.getElementById("admin-drop-zone");
+  if (!dropZone) return;
+
+  // Drag and Drop events
+  dropZone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropZone.classList.add("drag-over");
+  });
+
+  dropZone.addEventListener("dragleave", () => {
+    dropZone.classList.remove("drag-over");
+  });
+
+  dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropZone.classList.remove("drag-over");
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      handleAdminFile(files[0]);
+      showToast("Image loaded!", "success");
+    }
+  });
+  
+  // Clipboard paste support
+  document.addEventListener("paste", (e) => {
+    const items = e.clipboardData.items;
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type.indexOf("image") !== -1) {
+        const file = items[i].getAsFile();
+        adminFileInput.files = new DataTransfer().files;
+        handleAdminFile(file);
+        showToast("Image pasted from clipboard!", "success");
+        break;
+      }
+    }
+  });
+});

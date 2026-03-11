@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile | Watchmen</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav>
+    <h1><img src="Logo/logo.jpeg" alt="Watchmen Logo" style="height: 40px; border-radius: 8px;"> Watchmen</h1>
+    <div class="nav-links">
+      <a href="index.html">Gallery</a>
+      <a id="boards-link" href="boards.html" style="display: none;">Boards</a>
+      <a id="upload-link" href="upload.html" style="display: none;">Upload</a>
+      <a id="admin-link" href="admin.html" style="display: none;">Admin</a>
+      <div id="user-status"></div>
+      <button id="auth-toggle" class="btn-primary" onclick="toggleAuth()">Login</button>
+    </div>
+  </nav>
+
+  <div class="container">
+    <div class="profile-header" style="background: #1e293b; border-radius: 24px; padding: 3rem; margin-bottom: 3rem; text-align: center; border: 1px solid rgba(255, 255, 255, 0.05);">
+      <div id="profile-photo-container" style="position: relative; display: inline-block; margin-bottom: 1.5rem;">
+        <img id="profile-photo" src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff&size=128" alt="Profile" style="width: 128px; height: 128px; border-radius: 50%; object-fit: cover; border: 4px solid #6366f1;">
+        <button id="edit-photo-btn" onclick="document.getElementById('photo-upload').click()" style="display: none; position: absolute; bottom: 0; right: 0; background: #6366f1; border: none; color: white; border-radius: 50%; width: 36px; height: 36px; cursor: pointer;">📷</button>
+        <input type="file" id="photo-upload" accept="image/*" style="display: none;" onchange="uploadProfilePhoto(event)">
+      </div>
+      
+      <h2 id="profile-name" style="font-size: 2.5rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem;">Loading...</h2>
+      <p id="profile-email" style="color: #94a3b8; font-size: 1.1rem; margin-bottom: 1rem;"></p>
+      
+      <div id="profile-stats" style="display: flex; justify-content: center; gap: 2rem; margin: 1.5rem 0; color: #fff; font-weight: 600;">
+        <div style="cursor: pointer;" onclick="showFollowers()">
+          <span id="follower-count" style="font-size: 1.25rem; display: block;">0</span>
+          <span style="color: #64748b; font-size: 0.875rem;">Followers</span>
+        </div>
+        <div style="cursor: pointer;" onclick="showFollowing()">
+          <span id="following-count" style="font-size: 1.25rem; display: block;">0</span>
+          <span style="color: #64748b; font-size: 0.875rem;">Following</span>
+        </div>
+      </div>
+
+      <div id="profile-actions" style="margin-top: 2rem; display: flex; justify-content: center; gap: 1rem;">
+        <button id="follow-btn" class="btn-primary" style="display: none; min-width: 150px;" onclick="toggleFollow()">Follow</button>
+        <button id="edit-profile-btn" class="btn-primary" style="display: none; min-width: 150px; background: #334155;" onclick="openEditProfileModal()">Edit Profile</button>
+      </div>
+    </div>
+
+    <div class="profile-tabs" style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 1rem;">
+      <button id="pins-tab" class="tab-btn active" onclick="switchTab('pins')" style="background: none; border: none; color: #fff; font-size: 1.1rem; font-weight: 700; cursor: pointer; padding-bottom: 1.1rem; margin-bottom: -1.1rem; border-bottom: 3px solid #6366f1;">Pins</button>
+      <button id="boards-tab" class="tab-btn" onclick="switchTab('boards')" style="background: none; border: none; color: #94a3b8; font-size: 1.1rem; font-weight: 700; cursor: pointer;">Boards</button>
+    </div>
+
+    <div id="profile-content" class="gallery">
+      <!-- Content will load here -->
+    </div>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <div id="edit-profile-modal" class="modal-overlay" style="display: none;">
+    <div class="auth-container" style="max-width: 500px;">
+      <h2 style="margin-bottom: 1.5rem;">Edit Profile</h2>
+      <div class="form-group">
+        <input type="text" id="edit-name" placeholder=" ">
+        <label for="edit-name">Display Name</label>
+      </div>
+      <div class="form-group">
+        <textarea id="edit-bio" placeholder=" " style="min-height: 100px;"></textarea>
+        <label for="edit-bio">Bio</label>
+      </div>
+      <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+        <button class="btn-primary" style="flex: 1;" onclick="saveProfile()">Save Changes</button>
+        <button class="modal-close-btn" style="flex: 1; margin: 0;" onclick="closeEditProfileModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+  
+  <script src="js/firebase-config.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/profile.js"></script>
+</body>
+</html>

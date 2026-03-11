@@ -31,9 +31,24 @@
     </div>
 
     <div id="admin-panel-section" style="display: none;">
+      <!-- Mobile Upload Info -->
+      <div class="admin-panel" style="margin-bottom: 2rem; background: linear-gradient(135deg, #6366f1 0%, #7c3aed 50%, #8b5cf6 100%); border: 1px solid rgba(139, 92, 246, 0.4); box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);">
+        <h2 style="margin-bottom: 0.5rem; color: #fff; font-weight: 800;">📱 Upload from Any Device</h2>
+        <p style="color: rgba(255,255,255,0.9); margin-bottom: 1rem; font-size: 0.9375rem;">
+          Access this admin page from your phone or tablet to upload images directly. Just visit this same URL on your device and login!
+        </p>
+        <div style="background: rgba(0,0,0,0.25); padding: 1rem; border-radius: 14px; font-family: monospace; font-size: 0.875rem; color: #fff; word-break: break-all; border: 1px solid rgba(255,255,255,0.1);">
+          <span id="admin-url"></span>
+        </div>
+        <button onclick="copyAdminUrl()" class="btn-primary" style="margin-top: 1rem; background: rgba(255,255,255,0.95); color: #6366f1; width: 100%; font-weight: 700;">📋 Copy Admin URL</button>
+      </div>
+
       <!-- Quick Post Section -->
-      <div class="admin-panel">
-        <h2 style="margin-bottom: 0.5rem; color: #fff; font-weight: 800;">📤 Quick Post</h2>
+      <div class="admin-panel" style="border: 1px solid rgba(99, 102, 241, 0.15);">
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+          <span style="font-size: 1.5rem;">📤</span>
+          <h2 style="margin-bottom: 0; color: #fff; font-weight: 800;">Quick Post</h2>
+        </div>
         <p style="color: #94a3b8; margin-bottom: 2rem; font-size: 0.9375rem;">Upload directly to the gallery as an administrator</p>
         
         <div class="form-group">
@@ -45,25 +60,34 @@
           <textarea id="admin-image-description" placeholder=" "></textarea>
           <label for="admin-image-description">Short Description</label>
         </div>
+
         <div class="form-group">
-          <select id="admin-image-category" style="width: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 12px; padding: 0.75rem 1rem; color: #fff; font-family: inherit; font-size: 1rem; appearance: none;">
-            <option value="General">General</option>
-            <option value="Prayer">Prayer</option>
-            <option value="Scripture">Scripture</option>
-            <option value="Nature">Nature</option>
-            <option value="Testimony">Testimony</option>
-            <option value="Worship">Worship</option>
+          <select id="admin-board-select" style="width: 100%; padding: 0.8rem; background: #0f172a; border: 1px solid #334155; border-radius: 12px; color: #fff; margin-bottom: 1rem;">
+            <option value="">No Board (General)</option>
           </select>
-          <label for="admin-image-category" style="position: absolute; top: -0.6rem; left: 1rem; background: #1e293b; padding: 0 0.5rem; font-size: 0.75rem; color: #6366f1; font-weight: 700;">Category</label>
+          <label for="admin-board-select" style="display: block; margin-bottom: 0.5rem; color: #94a3b8; font-size: 0.875rem;">Add to Board</label>
+        </div>
+
+        <div class="form-group">
+          <input type="text" id="admin-image-section" placeholder=" ">
+          <label for="admin-image-section">Board Section (e.g. Living Room, Outdoors)</label>
         </div>
         
-        <div class="form-group">
-          <input type="file" id="admin-image-file" accept="image/*" style="padding: 0.6rem; background: #0f172a; border: 1px dashed #334155;" placeholder=" " onchange="previewAdminImage(event)">
-          <label for="admin-image-file">Image File *</label>
-          <div id="admin-image-preview" style="display: none; margin-top: 1rem; position: relative;">
-            <img id="admin-preview-img" src="" alt="Preview" style="width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-            <button onclick="removeAdminSelectedFile()" style="position: absolute; top: 10px; right: 10px; background: rgba(239, 68, 68, 0.9); border: none; color: white; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-weight: bold;">×</button>
+        <div style="margin-bottom: 0.5rem;">
+          <label style="display: block; font-size: 0.875rem; font-weight: 600; color: #cbd5e1; margin-bottom: 0.5rem;">Image File *</label>
+        </div>
+        <div class="drop-zone" id="admin-drop-zone" onclick="document.getElementById('admin-image-file').click()">
+          <span class="drop-zone-icon">🖼️</span>
+          <p class="drop-zone-text">Drag & drop an image here</p>
+          <p class="drop-zone-hint">JPG, PNG, GIF, WebP · up to 10 MB</p>
+          <div class="drop-zone-btns">
+            <button type="button" class="btn-browse" onclick="event.stopPropagation(); document.getElementById('admin-image-file').click()">📂 Browse Files</button>
           </div>
+          <input type="file" id="admin-image-file" accept="image/*" style="display:none" onchange="previewAdminImage(event)">
+        </div>
+        <div id="admin-image-preview" style="display: none; margin-top: 1rem; position: relative;">
+          <img id="admin-preview-img" src="" alt="Preview" style="width: 100%; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+          <button onclick="removeAdminSelectedFile()" style="position: absolute; top: 10px; right: 10px; background: rgba(239, 68, 68, 0.9); border: none; color: white; border-radius: 50%; width: 30px; height: 30px; cursor: pointer; font-weight: bold;">×</button>
         </div>
         
         <button class="btn-primary" id="admin-upload-btn" onclick="uploadImageAdmin()" style="width: 100%; margin-top: 1rem;">Post to Gallery</button>
@@ -81,16 +105,26 @@
 
       
 
-      <!-- Stats Section -->
-      <div class="admin-panel" style="margin-top: 2rem;">
-        <h2 style="margin-bottom: 1rem; color: #fff; font-weight: 800;">🔥 Most Popular Inspirations</h2>
-        <div id="popular-images-list" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 1rem;">
-          <p style="color: #64748b;">Loading trends...</p>
+      <!-- User Management Section -->
+      <div class="admin-panel" style="margin-top: 2rem; border: 1px solid rgba(99, 102, 241, 0.15);">
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+          <span style="font-size: 1.5rem;">👥</span>
+          <h2 style="margin-bottom: 0; color: #fff; font-weight: 800;">User Management</h2>
         </div>
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <input type="text" id="user-email" placeholder=" " oninput="searchUsers()">
+          <label for="user-email">Search by email</label>
+        </div>
+        <div id="user-list"><div class="spinner"></div></div>
+        <p id="no-users" style="display:none; text-align:center; padding: 2rem; color: #64748b;">No users found.</p>
       </div>
 
-      <div class="admin-panel" style="margin-top: 2rem;">
-        <h2 style="margin-bottom: 1.5rem; color: #fff; font-weight: 800;">📊 Platform Statistics</h2>
+      <!-- Stats Section -->
+      <div class="admin-panel" style="margin-top: 2rem; border: 1px solid rgba(16, 185, 129, 0.15);">
+        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+          <span style="font-size: 1.5rem;">📊</span>
+          <h2 style="margin-bottom: 0; color: #fff; font-weight: 800;">Platform Statistics</h2>
+        </div>
         <div class="stats-grid">
           <div class="stat-card">
             <h3 id="total-images">0</h3>
@@ -182,22 +216,7 @@
     </div>
   </div>
       
-      <div style="display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem;">
-        <button onclick="signInWithGoogle()" class="btn-google" style="width: 100%; background: #fff; color: #1e293b; border: none; padding: 0.75rem; border-radius: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.75rem; cursor: pointer; transition: all 0.2s;">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="20" height="20" alt="Google">
-          Continue with Google
-        </button>
-        <button onclick="signInWithGitHub()" class="btn-github" style="width: 100%; background: #24292e; color: #fff; border: none; padding: 0.75rem; border-radius: 12px; font-weight: 700; display: flex; align-items: center; justify-content: center; gap: 0.75rem; cursor: pointer; transition: all 0.2s;">
-          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/github.svg" width="20" height="20" alt="GitHub">
-          Continue with GitHub
-        </button>
-      </div>
-      <div class="auth-links">
-        <a href="#" onclick="toggleLoginSignup(event)" style="color: #6366f1; text-decoration: none; font-weight: 600;">Need an account? Sign up</a>
-      </div>
-      <button class="modal-close-btn" onclick="closeAuthModal()">Skip for now</button>
-    </div>
-  </div>
+
 
   <div id="toast-container"></div>
 

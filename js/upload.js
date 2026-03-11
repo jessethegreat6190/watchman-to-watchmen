@@ -44,13 +44,15 @@ function initDropZone() {
 // Handle multiple file selection
 function handleMultipleFiles(event) {
   const files = Array.from(event.target.files);
+  const MAX_SIZE = 25 * 1024 * 1024; // 25MB
+  
   const validFiles = files.filter(file => {
     if (!file.type.startsWith("image/")) {
       showToast(`${file.name} is not an image`, "warning");
       return false;
     }
-    if (file.size > 10 * 1024 * 1024) {
-      showToast(`${file.name} exceeds 10MB`, "warning");
+    if (file.size > MAX_SIZE) {
+      showToast(`${file.name} exceeds 25MB limit`, "warning");
       return false;
     }
     return true;

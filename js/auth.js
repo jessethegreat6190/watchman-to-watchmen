@@ -33,16 +33,27 @@ async function signUpUser(email, password) {
 
 // Login user
 async function loginUser(email, password) {
+  if (!email || !password) {
+    showToast("Please enter email and password", "warning");
+    return null;
+  }
+  
   try {
+    console.log("Attempting login for:", email);
     const result = await auth.signInWithEmailAndPassword(email, password);
+    console.log("Login successful:", result.user);
     showToast("Welcome back!", "success");
     return result.user;
   } catch (error) {
     console.error("Login error:", error.code, error.message);
-    let errorMsg = "Login failed: " + error.message;
-    if (error.code === 'auth/user-not-found') errorMsg = "No account found with this email.";
+    let errorMsg = "Login failed";
+    
+    if (error.code === 'auth/user-not-found') errorMsg = "No account found. Sign up first!";
     else if (error.code === 'auth/wrong-password') errorMsg = "Incorrect password.";
     else if (error.code === 'auth/invalid-email') errorMsg = "Invalid email format.";
+    else if (error.code === 'auth/too-many-requests') errorMsg = "Too many attempts. Try again later.";
+    else if (error.code === 'auth/network-request-failed') errorMsg = "Network error. Check your connection.";
+    else errorMsg = "Login failed. Please try again.";
     
     showToast(errorMsg, "error");
     return null;

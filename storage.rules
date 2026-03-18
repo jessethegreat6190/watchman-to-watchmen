@@ -1,0 +1,11 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Gallery folder - read for all, write/delete only for admin
+    match /gallery/{allPaths=**} {
+      allow read: if true;
+      allow write, delete: if request.auth != null && request.auth.uid == 'ADMIN_UID_PLACEHOLDER';
+    }
+  }
+}

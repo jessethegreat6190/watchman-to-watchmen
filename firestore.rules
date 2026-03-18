@@ -1,0 +1,11 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Gallery collection - read for all, write/delete only for admin
+    match /gallery/{document=**} {
+      allow read: if true;
+      allow write, delete: if request.auth != null && request.auth.uid == 'ADMIN_UID_PLACEHOLDER';
+    }
+  }
+}

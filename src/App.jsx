@@ -226,7 +226,9 @@ export default function App() {
   };
 
   const handleDelete = async (img) => {
-    if (!img.id?.startsWith("s")) { try { await deleteDoc(doc(db, "images", img.id)); } catch {} }
+    if (!img.id?.startsWith("s")) {
+      try { await deleteDoc(doc(db, "images", img.id)); } catch {}
+    }
     setImages(prev => prev.filter(i => i.id !== img.id));
     if (selectedImage?.id === img.id) setSelectedImage(null);
     notify("Image deleted.");
@@ -548,7 +550,7 @@ export default function App() {
                 </div>
                 <span className="pill">{img.type || "photo"}</span>
                 {img.id?.startsWith("s")
-                  ? <span style={{ fontSize: 11, color: "#ccc", padding: "0 8px", fontFamily: "DM Sans" }}>sample</span>
+                  ? <button className="btn-red" style={{ padding: "6px 14px", fontSize: 12 }} onClick={() => handleDelete(img)}>Delete</button>
                   : <button className="btn-red" style={{ padding: "6px 14px", fontSize: 12 }} onClick={() => handleDelete(img)}>Delete</button>
                 }
               </div>

@@ -374,9 +374,30 @@ export default function App() {
               : filtered.length === 0
                 ? <div style={{ textAlign: "center", padding: "80px 0", color: "#aaa", fontFamily: "DM Sans" }}>No visuals match your search.</div>
                 : <div className="masonry">
-                    {filtered.map((img, idx) => (
+                    {filtered.map((img, idx) => {
+                      const h = img.displayHeight || CARD_HEIGHTS[idx % CARD_HEIGHTS.length];
+                      return (
                       <div key={img.id} className="card-wrap" style={{ animationDelay: `${(idx % 6) * 0.07}s` }}>
-                        <img src={img.url} alt={img.title} style={{ height: CARD_HEIGHTS[idx % CARD_HEIGHTS.length] }} onClick={() => setSelectedImage(img)} loading="lazy" />
+                        <img
+                          src={img.url}
+                          alt={img.title}
+                          style={{ height: h }}
+                          onClick={() => setSelectedImage(img)}
+                          loading="lazy"
+                          onError={e => {
+                            e.target.style.display = "none";
+                            e.target.nextSibling.style.display = "flex";
+                          }}
+                          onLoad={e => {
+                            e.target.style.display = "block";
+                            e.target.nextSibling.style.display = "none";
+                          }}
+                        />
+                        <div onClick={() => setSelectedImage(img)} style={{ display: "none", height: h, background: "#1a1a1a", alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 8, cursor: "pointer" }}>
+                          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, fontFamily: "DM Sans", textAlign: "center", padding: "0 12px" }}>{img.title}</p>
+                          <p style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, fontFamily: "DM Sans" }}>Processing — check back soon</p>
+                        </div>
                         <div className="card-ov" onClick={() => setSelectedImage(img)}>
                           <p style={{ color: "#fff", fontSize: 13, fontWeight: 500, marginBottom: 9, fontFamily: "DM Sans", textShadow: "0 1px 3px rgba(0,0,0,0.5)" }}>{img.title}</p>
                           <div className="ca" onClick={e => e.stopPropagation()}>
@@ -390,7 +411,7 @@ export default function App() {
                             <button className="ca-btn" style={{ background: "rgba(255,255,255,0.95)", color: "#1a1a1a" }} onClick={() => setShareImage(img)}>
                               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                             </button>
-                            {isAdmin && !img.id?.startsWith("s") && (
+                            {isAdmin && (
                               <button className="ca-btn" style={{ background: "#e24b4a", color: "#fff" }} onClick={() => handleDelete(img)}>
                                 <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/></svg>
                               </button>

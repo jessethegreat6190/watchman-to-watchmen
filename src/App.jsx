@@ -494,12 +494,10 @@ export default function App() {
               Melania — Watchman to Watchmen
             </div>
 
-            <h1 className={`hero-enter d2 ${heroVisible ? "visible" : ""}`} style={{ fontFamily: "'Gondens', 'Cormorant Garamond', Georgia, serif", fontSize: "clamp(56px, 9vw, 120px)", fontWeight: 400, letterSpacing: "-2px", lineHeight: 0.92, marginBottom: 16, color: "#0a0a0a" }}>
+            <h1 className={`hero-enter d2 ${heroVisible ? "visible" : ""}`} style={{ fontFamily: "'Gondens', 'Cormorant Garamond', Georgia, serif", fontSize: "clamp(42px, 7vw, 96px)", fontWeight: 400, letterSpacing: "-1px", lineHeight: 1.0, marginBottom: 16, color: "#0a0a0a" }}>
               Melania
+              <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: "italic", fontSize: "clamp(22px, 3vw, 42px)", color: "#555", display: "block", fontWeight: 400, marginTop: 4, letterSpacing: "0" }}>Watcher On The Wall · Narrow Pather</span>
             </h1>
-            <p className={`hero-enter d2 ${heroVisible ? "visible" : ""}`} style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: "italic", fontSize: "clamp(18px, 2.4vw, 32px)", color: "#555", fontWeight: 400, marginBottom: 20, lineHeight: 1.4, letterSpacing: "0" }}>
-              Watcher On The Wall · Narrow Pather
-            </p>
 
             <p className={`hero-enter d3 ${heroVisible ? "visible" : ""}`} style={{ fontSize: 16, color: "#666", marginBottom: 28, maxWidth: 560, lineHeight: 1.75, fontFamily: "DM Sans" }}>
               Midnight Crier — Curated photography & artwork freely shared for the body of Christ.
